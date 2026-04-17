@@ -39,7 +39,7 @@ public final class Constants {
     public static final String SWAGGER_OP_DELETE_DESC = "Desactiva al empleado sin eliminarlo de la base de datos";
 
     // Mensajes para el GlobalExceptionHandler
-    public static final String RESPONSE_ERROR_KEY = "error";
+    public static final String RESPONSE_ERROR_KEY = "error ";
     public static final String MSG_INTERNAL_SERVER_ERROR = "Ocurrió un error inesperado en el servidor";
     public static final String MSG_INVALID_ENUM_VALUE = "El valor proporcionado no existe en nuestro catálogo válido.";
     public static final String MSG_INVALID_JSON_FORMAT = "El formato del cuerpo de la petición (JSON) es inválido.";
