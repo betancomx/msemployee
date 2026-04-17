@@ -45,7 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<EmployeeResponseDTO> getAllEmployees() {
-        return repository.findAll().stream()
+        return repository.findAllByIsActiveTrue().stream()
                 .map(mapper::toDto)
                 .toList();
     }
@@ -53,15 +53,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public EmployeeResponseDTO getEmployeeById(Long id) {
-        Employee employee = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
+        Employee employee = findActiveById(id);
         return mapper.toDto(employee);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EmployeeResponseDTO> searchEmployeesByName(String name) {
-        return repository.findByFirstNameContainingIgnoreCaseOrMiddleNameContainingIgnoreCase(name, name)
+        return repository.searchActiveByName(name)
                 .stream()
                 .map(mapper::toDto)
                 .toList();
@@ -70,9 +69,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO request) {
-        Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
-        // put = reemplazo total
+        Employee existing = findActiveById(id);
+
         existing.setFirstName(request.firstName());
         existing.setMiddleName(request.middleName());
         existing.setLastName(request.lastName());
@@ -88,9 +86,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDTO patchEmployee(Long id, EmployeeRequestDTO request) {
-        Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
-        // patch = solo lo que no venga nulo
+        // protejo patch contra empleados borrados
+        Employee existing = findActiveById(id);
+
         if (request.firstName() != null) existing.setFirstName(request.firstName());
         if (request.middleName() != null) existing.setMiddleName(request.middleName());
         if (request.lastName() != null) existing.setLastName(request.lastName());
@@ -105,10 +103,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void deleteEmployee(Long id) {
-        Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
-        // se apaga la bandera de activo
+        Employee existing = findActiveById(id);
         existing.setIsActive(false);
         repository.save(existing);
+    }
+
+    private Employee findActiveById(Long id) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
+        if (!Boolean.TRUE.equals(employee.getIsActive())) {
+            throw new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id));
+        }
+        return employee;
     }
 }
