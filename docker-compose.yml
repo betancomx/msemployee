@@ -7,10 +7,11 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: boss123
-      MYSQL_DATABASE: employee_db
-      MYSQL_USER: raven
-      MYSQL_PASSWORD: raven123
+      # Claves defecto si no hay un .env
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-boss123}
+      MYSQL_DATABASE: ${DB_NAME:-employee_db}
+      MYSQL_USER: ${DB_USER:-raven}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-raven123}
     volumes:
       - mysql_data:/var/lib/mysql
     restart: unless-stopped
@@ -28,9 +29,9 @@ services:
       mysql-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/employee_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=raven
-      - SPRING_DATASOURCE_PASSWORD=raven123
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/${DB_NAME:-employee_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-raven}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-raven123}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
 volumes:
