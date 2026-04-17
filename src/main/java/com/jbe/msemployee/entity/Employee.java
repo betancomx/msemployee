@@ -1,5 +1,7 @@
 package com.jbe.msemployee.entity;
 
+import com.jbe.msemployee.commons.Gender;
+import com.jbe.msemployee.commons.Puesto;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -22,16 +24,13 @@ public class Employee {
     private String lastName;
     private String secondLastName;
     private Integer age;
-    private String gender;
-    // el formato dd-MM-yyyy lo formateo en el dto
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDate birthDate;
-    // guardamos el texto tal cual
     @Enumerated(EnumType.STRING)
     private Puesto puesto;
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    // mi borrado logico por default
     @Builder.Default
     private Boolean isActive = true;
 

@@ -1,5 +1,6 @@
 package com.jbe.msemployee.controller;
 
+import static com.jbe.msemployee.commons.Constants.*;
 import com.jbe.msemployee.dto.EmployeeRequestDTO;
 import com.jbe.msemployee.dto.EmployeeResponseDTO;
 import com.jbe.msemployee.service.EmployeeService;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,43 +19,40 @@ import java.util.List;
 @RestController
 @RequestMapping("/employees")
 @RequiredArgsConstructor
-@Tag(name = "Gestión de Empleados", description = "Endpoints para el CRUD de empleados de Raven")
+@Tag(name = SWAGGER_TAG_NAME, description = SWAGGER_TAG_DESC)
+@Validated
 public class EmployeeController {
 
     private final EmployeeService service;
 
-    @Operation(summary = "Crear un empleado", description = "Registra un nuevo empleado en el sistema")
-    @ApiResponse(responseCode = "201", description = "Empleado creado exitosamente")
+    @Operation(summary = SWAGGER_OP_CREATE, description = SWAGGER_OP_CREATE_DESC)
+    @ApiResponse(responseCode = "201", description = "Empleado(s) creado(s) exitosamente")
     @PostMapping
-    public ResponseEntity<EmployeeResponseDTO> create(@Valid @RequestBody EmployeeRequestDTO request) {
-        return new ResponseEntity<>(service.createEmployee(request), HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "Crear empleados en lote", description = "Permite la inserción masiva de empleados")
-    @PostMapping("/bulk")
-    public ResponseEntity<List<EmployeeResponseDTO>> createBulk(@Valid @RequestBody List<EmployeeRequestDTO> requests) {
+    // aquí pido directamente la lista, jackson se encarga de envolverlo si solo mandan un objeto
+    public ResponseEntity<List<EmployeeResponseDTO>> create(@Valid @RequestBody List<EmployeeRequestDTO> requests) {
+        // delego todo a mi método de lote en el servicio
         return new ResponseEntity<>(service.createEmployees(requests), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Listar todos", description = "Obtiene la lista completa de empleados activos e inactivos")
+    @Operation(summary = SWAGGER_OP_GET_ALL, description = SWAGGER_OP_GET_ALL_DESC)
     @GetMapping
     public ResponseEntity<List<EmployeeResponseDTO>> getAll() {
         return ResponseEntity.ok(service.getAllEmployees());
     }
 
-    @Operation(summary = "Buscar por ID")
+    @Operation(summary = SWAGGER_OP_GET_ID)
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getEmployeeById(id));
     }
 
-    @Operation(summary = "Búsqueda parcial por nombre")
+    @Operation(summary = SWAGGER_OP_SEARCH)
     @GetMapping("/search")
     public ResponseEntity<List<EmployeeResponseDTO>> searchByName(@RequestParam String name) {
         return ResponseEntity.ok(service.searchEmployeesByName(name));
     }
 
-    @Operation(summary = "Actualización total (PUT)", description = "Reemplaza todos los campos del empleado")
+    @Operation(summary = SWAGGER_OP_PUT, description = SWAGGER_OP_PUT_DESC)
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> update(
             @PathVariable Long id,
@@ -61,7 +60,7 @@ public class EmployeeController {
         return ResponseEntity.ok(service.updateEmployee(id, request));
     }
 
-    @Operation(summary = "Actualización parcial (PATCH)", description = "Actualiza solo los campos enviados en el cuerpo")
+    @Operation(summary = SWAGGER_OP_PATCH, description = SWAGGER_OP_PATCH_DESC)
     @PatchMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> patch(
             @PathVariable Long id,
@@ -69,7 +68,7 @@ public class EmployeeController {
         return ResponseEntity.ok(service.patchEmployee(id, request));
     }
 
-    @Operation(summary = "Borrado lógico", description = "Desactiva al empleado sin eliminarlo de la base de datos")
+    @Operation(summary = SWAGGER_OP_DELETE, description = SWAGGER_OP_DELETE_DESC)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deleteEmployee(id);

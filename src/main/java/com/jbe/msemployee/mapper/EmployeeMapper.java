@@ -5,16 +5,20 @@ import com.jbe.msemployee.dto.EmployeeResponseDTO;
 import com.jbe.msemployee.entity.Employee;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class EmployeeMapper {
-    // de peticion a entidad para guardar en bd
+
     public Employee toEntity(EmployeeRequestDTO dto) {
+        Integer calculatedAge = calculateAge(dto.birthDate());
+
         return Employee.builder()
                 .firstName(dto.firstName())
                 .middleName(dto.middleName())
                 .lastName(dto.lastName())
                 .secondLastName(dto.secondLastName())
-                .age(dto.age())
+                .age(calculatedAge) // Guardo el calculo en el campo de la BD
                 .gender(dto.gender())
                 .birthDate(dto.birthDate())
                 .puesto(dto.puesto())
@@ -22,7 +26,6 @@ public class EmployeeMapper {
                 .build();
     }
 
-    // de entidad a dto para la salida de la api
     public EmployeeResponseDTO toDto(Employee entity) {
         return new EmployeeResponseDTO(
                 entity.getId(),
@@ -31,11 +34,15 @@ public class EmployeeMapper {
                 entity.getLastName(),
                 entity.getSecondLastName(),
                 entity.getAge(),
-                entity.getGender(),
+                entity.getGender().name(),
                 entity.getBirthDate(),
                 entity.getPuesto(),
-                entity.getCreatedAt(),
-                entity.getIsActive()
+                entity.getCreatedAt()
         );
+    }
+
+    private Integer calculateAge(LocalDate birthDate) {
+        if (birthDate == null) return null;
+        return java.time.Period.between(birthDate, LocalDate.now()).getYears();
     }
 }

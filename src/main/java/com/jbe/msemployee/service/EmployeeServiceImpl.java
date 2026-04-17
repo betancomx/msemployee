@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import static com.jbe.msemployee.commons.Constants.MSG_EMP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(readOnly = true)
     public EmployeeResponseDTO getEmployeeById(Long id) {
         Employee employee = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Empleado no encontrado con ID: " + id));
+                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
         return mapper.toDto(employee);
     }
 
@@ -68,13 +71,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO request) {
         Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Empleado no encontrado con ID: " + id));
+                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
         // put = reemplazo total
         existing.setFirstName(request.firstName());
         existing.setMiddleName(request.middleName());
         existing.setLastName(request.lastName());
         existing.setSecondLastName(request.secondLastName());
-        existing.setAge(request.age());
+        existing.setAge(java.time.Period.between(request.birthDate(), LocalDate.now()).getYears());
         existing.setGender(request.gender());
         existing.setBirthDate(request.birthDate());
         existing.setPuesto(request.puesto());
@@ -86,13 +89,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseDTO patchEmployee(Long id, EmployeeRequestDTO request) {
         Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Empleado no encontrado con ID: " + id));
+                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
         // patch = solo lo que no venga nulo
         if (request.firstName() != null) existing.setFirstName(request.firstName());
         if (request.middleName() != null) existing.setMiddleName(request.middleName());
         if (request.lastName() != null) existing.setLastName(request.lastName());
         if (request.secondLastName() != null) existing.setSecondLastName(request.secondLastName());
-        if (request.age() != null) existing.setAge(request.age());
         if (request.gender() != null) existing.setGender(request.gender());
         if (request.birthDate() != null) existing.setBirthDate(request.birthDate());
         if (request.puesto() != null) existing.setPuesto(request.puesto());
@@ -104,7 +106,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public void deleteEmployee(Long id) {
         Employee existing = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Empleado no encontrado con ID: " + id));
+                .orElseThrow(() -> new EmployeeNotFoundException(String.format(MSG_EMP_NOT_FOUND, id)));
         // se apaga la bandera de activo
         existing.setIsActive(false);
         repository.save(existing);

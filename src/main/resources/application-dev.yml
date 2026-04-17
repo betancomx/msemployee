@@ -8,3 +8,15 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
+    #solo ver queries en el desarrollo
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+#Detalles solo para desarrollo
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    com.jbe.msemployee: DEBUG

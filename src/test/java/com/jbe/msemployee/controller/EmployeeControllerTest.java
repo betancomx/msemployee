@@ -2,19 +2,22 @@ package com.jbe.msemployee.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.jbe.msemployee.commons.Gender;
 import com.jbe.msemployee.dto.EmployeeRequestDTO;
 import com.jbe.msemployee.dto.EmployeeResponseDTO;
-import com.jbe.msemployee.entity.Puesto;
+import com.jbe.msemployee.commons.Puesto;
 import com.jbe.msemployee.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+// 1. Nueva importación para Mockito en Spring Boot 3.4.0+
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +32,8 @@ class EmployeeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    // 2. Usamos la nueva anotación en lugar de @MockBean
+    @MockitoBean
     private EmployeeService service;
 
     private ObjectMapper objectMapper;
@@ -38,18 +42,19 @@ class EmployeeControllerTest {
 
     @BeforeEach
     void setUp() {
-        // configuro jackson pa que entienda las fechas
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
+        // 3. Corrijo la forma en que asigno el Puesto (ya no uso 'new')
         requestDTO = new EmployeeRequestDTO(
-                "Juan", null, "Perez", "Vasconcelos", 30, "M",
-                LocalDate.of(1993, 1, 1), Puesto.DEVELOPER
+                "Juan", "Carlos", "Perez", "Gomez",
+                Gender.H, LocalDate.of(1990, 1, 1), Puesto.DEVELOPER // <- AJUSTA ESTE VALOR A TU ENUM
         );
 
         responseDTO = new EmployeeResponseDTO(
-                1L, "Juan", null, "Perez", null, 30, "M",
-                LocalDate.of(1993, 1, 1), Puesto.DEVELOPER, null, true
+                1L, "Juan", "Carlos", "Perez", "Gomez", 36, "H",
+                LocalDate.of(1990, 1, 1), Puesto.DEVELOPER, // <- AJUSTA ESTE VALOR A TU ENUM
+                LocalDateTime.now()
         );
     }
 
@@ -66,31 +71,31 @@ class EmployeeControllerTest {
 
     @Test
     void testCreateEmployee() throws Exception {
-        // simulo la creacion exitosa
-        when(service.createEmployee(any(EmployeeRequestDTO.class))).thenReturn(responseDTO);
+        when(service.createEmployees(any())).thenReturn(List.of(responseDTO)); //Dto en lista
 
-        // mando el post con el json y espero un 201 created
+        String jsonPayload = objectMapper.writeValueAsString(List.of(requestDTO)); //convierte de lista
+
         mockMvc.perform(post("/employees")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
+                        .content(jsonPayload))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L));
+                //revisar posicion 0 pq respuesta en forma de lista
+                .andExpect(jsonPath("$[0].firstName").value("Juan"));
     }
 
     @Test
     void testCreateEmployee_BadRequest() throws Exception {
-        //Request erroneo, falta el apellido
+        //request sin campos obligatorios para generar error
         EmployeeRequestDTO badRequest = new EmployeeRequestDTO(
-                "Juan", null, "Perez", null, 30, "M",
-                LocalDate.of(1993, 1, 1), Puesto.DEVELOPER
+                "", null, "", "", null, null, null
         );
 
-        // Server manda 400
+        String jsonPayload = objectMapper.writeValueAsString(List.of(badRequest));
+
         mockMvc.perform(post("/employees")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(badRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.secondLastName").exists());
+                        .content(jsonPayload))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

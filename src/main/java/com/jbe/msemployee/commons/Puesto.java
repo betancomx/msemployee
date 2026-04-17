@@ -1,4 +1,4 @@
-package com.jbe.msemployee.entity;
+package com.jbe.msemployee.commons;
 
 public enum Puesto {
     DEVELOPER,

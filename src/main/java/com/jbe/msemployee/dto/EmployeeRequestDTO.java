@@ -1,27 +1,27 @@
 package com.jbe.msemployee.dto;
 
-import com.jbe.msemployee.entity.Puesto;
+import com.jbe.msemployee.commons.Gender;
+import com.jbe.msemployee.commons.Puesto;
 import jakarta.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
+import static com.jbe.msemployee.commons.Constants.*;
+
 public record EmployeeRequestDTO(
-        @NotBlank(message = "El primer nombre no puede ir vacio")
+        @NotBlank(message = MSG_VALID_FIRST_NAME)
         String firstName,
         String middleName,
-        @NotBlank(message = "El apellido paterno es obligatorio")
+        @NotBlank(message = MSG_VALID_LAST_NAME)
         String lastName,
-        @NotBlank(message = "El apellido meterno es obligatorio")
+        @NotBlank(message = MSG_VALID_SECOND_LAST_NAME)
         String secondLastName,
-        @Min(value = 18, message = "No puede haber empleados menores de edad")
-        Integer age,
-        @NotBlank(message = "Falta el sexo")
-        String gender,
-        // pa que jackson agarre el formato dd-MM-yyyy que pidieron
-        @NotNull(message = "La fecha de nacimiento es obligatoria")
-        @Past(message = "La fecha de nacimiento no puede ser mayor al día actual")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @NotNull(message = MSG_VALID_GENDER)
+        Gender gender,
+        @NotNull(message = MSG_VALID_BIRTH_DATE)
+        @Past(message = MSG_VALID_BIRTH_DATE_PAST)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
         LocalDate birthDate,
-        @NotNull(message = "El empleado debe tener un puesto")
+        @NotNull(message = MSG_VALID_PUESTO)
         Puesto puesto
 ) {}
