@@ -1,0 +1,383 @@
+{
+  "info": {
+    "_postman_id": "e7aefdd6-913a-4c9c-873b-8642237a680c",
+    "name": "Raven Employee API final",
+    "description": "Colección corregida con el formato de fecha exacto (dd-MM-yyyy).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49421725",
+    "_collection_link": "https://go.postman.co/collection/49421725-e7aefdd6-913a-4c9c-873b-8642237a680c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "A. Crear Empleado (POST)",
+      "item": [
+        {
+          "name": "A1. Caso OK",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"firstName\": \"Jesus\",\n    \"middleName\": \"Alejandro\",\n    \"lastName\": \"Orozco\",\n    \"secondLastName\": \"Cano\",\n    \"gender\": \"H\",\n    \"birthDate\": \"17-02-1968\",\n    \"puesto\": \"DEVELOPER\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A2. Caso Error (Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"firstName\": \"Jesus\",\n    \"lastName\": \"\", \n    \"gender\": \"H\",\n    \"birthDate\": \"17-02-1968\",\n    \"puesto\": \"DRACULA\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "B. Crear Lote (POST)",
+      "item": [
+        {
+          "name": "B1. Caso OK",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"firstName\": \"Ana\",\n    \"lastName\": \"Gomez\",\n    \"gender\": \"M\",\n    \"birthDate\": \"10-05-1990\",\n    \"puesto\": \"QA\"\n  },\n  {\n    \"firstName\": \"Luis\",\n    \"lastName\": \"Perez\",\n    \"gender\": \"H\",\n    \"birthDate\": \"20-11-1985\",\n    \"puesto\": \"TECH_LEAD\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "B2. Caso Error (Validation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"firstName\": \"Ana\",\n    \"lastName\": \"Gomez\",\n    \"gender\": \"M\",\n    \"birthDate\": \"10-05-1990\",\n    \"puesto\": \"QA\"\n  },\n  {\n    \"firstName\": \"Luis\",\n    \"lastName\": \"Perez\",\n    \"gender\": \"Z\", \n    \"birthDate\": \"20-11-1985\",\n    \"puesto\": \"TECH_LEAD\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "C. Obtener Todos (GET)",
+      "item": [
+        {
+          "name": "C1. Caso OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "D. Obtener por ID (GET)",
+      "item": [
+        {
+          "name": "D1. Caso OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "D2. Caso Error (Not Found)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "E. Buscar por Nombre (GET)",
+      "item": [
+        {
+          "name": "E1. Caso OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/search?name=Jesus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Jesus"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "F. Actualizar Total (PUT)",
+      "item": [
+        {
+          "name": "F1. Caso OK",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jesus Modificado\",\n  \"middleName\": \"\",\n  \"lastName\": \"Orozco\",\n  \"secondLastName\": \"Cano\",\n  \"gender\": \"H\",\n  \"birthDate\": \"17-02-1968\",\n  \"puesto\": \"MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "F2. Caso Error (Bad Request)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jesus Modificado\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "G. Actualizar Parcial (PATCH)",
+      "item": [
+        {
+          "name": "G1. Caso OK",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"puesto\": \"TECH_LEAD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "G2. Caso Error (Not Found)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"puesto\": \"TECH_LEAD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "H. Borrado Lógico (DELETE)",
+      "item": [
+        {
+          "name": "H1. Caso OK",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "H2. Caso Error (Not Found)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
